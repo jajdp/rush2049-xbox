@@ -1,0 +1,48 @@
+# Nothing that belongs to the game ever goes in here.
+
+# ROMs and dumps
+*.z64
+*.n64
+*.v64
+*.rom
+
+# build output
+*.exe
+*.dll
+*.lib
+*.obj
+*.pdb
+*.appx
+*.msix
+build/
+build-*/
+
+# signing certificates: yours is yours
+*.pfx
+*.p12
+*.cer
+
+# saves, shader caches and logs
+*.sra
+*.srm
+*.eep
+shadercache/
+*.log
+
+# mods: a .nrm is someone else's package, not ours to ship
+*.nrm
+
+# the game's own tree, if anyone clones it in here
+rush2049/
+src/
+
+# Python / editors / OS
+__pycache__/
+*.py[cod]
+.vs/
+.vscode/
+*.swp
+*.tmp
+Thumbs.db
+desktop.ini
+.DS_Store
