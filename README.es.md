@@ -141,6 +141,23 @@ de lo que salió mal.
 
 ## Créditos y licencia
 
+**Casi nada de lo que hace que esto funcione es nuestro.** Este repositorio es una receta que une el trabajo de otros; sin cualquiera de estas piezas no habría port.
+
+| Qué hace | Quién lo hizo | Licencia |
+|---|---|---|
+| **[rush-2049-recomp](https://github.com/n64hub/rush-2049-recomp)** — recompila *San Francisco Rush 2049* | **n64hub** | GPL-3.0 |
+| **[uwp-dep](https://github.com/worleydl/uwp-dep)** — Dawn, SDL3, nod y dxcompiler **compilados para UWP**: la única razón por la que algo de esto corre en una Xbox | **Daniel Worley** (worleydl) | libuwp: zlib, © 2025 |
+| **[N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime)** — el runtime sobre el que corren esas recompilaciones | the **N64Recomp** project | GPL-3.0 |
+| **[RecompFrontend](https://github.com/N64Recomp/RecompFrontend)** — los menús y la configuración dentro del juego | the **N64Recomp** project | GPL-3.0 |
+| **[N64Recomp](https://github.com/N64Recomp/N64Recomp)** — recompila estáticamente juegos de N64 a ejecutables nativos | **Mr-Wiseguy** and the N64Recomp project | MIT |
+| **[rt64](https://github.com/rt64/rt64)** — el renderizador de N64, con sus mejoras | the **RT64** project | MIT |
+| **[SDL](https://github.com/libsdl-org/SDL)** — ventana, mando y audio | **Sam Lantinga** and the SDL contributors | zlib |
+
+Mención especial a **Daniel Worley**: las compilaciones UWP de `uwp-dep` son lo que hace posible este port a Xbox. No las hicimos nosotros, las usamos.
+
+**La receta de empaquetado, las herramientas y esta documentación** son de **Recompilaciones**.
+
+
 Receta y herramientas de **Recompilaciones**, bajo la **[GPL-3.0](LICENSE)** — la licencia del
 proyecto del juego que esta receta parchea,
 [`n64hub/rush-2049-recomp`](https://github.com/n64hub/rush-2049-recomp), y la de
