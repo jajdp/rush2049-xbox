@@ -32,13 +32,14 @@ anchors, and it is idempotent.
 
 ## The libraries: this game is a free ride
 
-Rush 2049 pins **exactly the same three library commits as Mario Party**, which is the single
-reason this port took one evening instead of a week: worleydl's UWP patches and the four
-conflict resolutions already published applied without a change.
+The platform work is **worleydl**'s, and what decides how much of it you get is which library
+commits the game pins. Rush 2049 pins ones close enough to his forks that his patches go in with
+`git apply --3way` and leave **four conflicts, all of the same kind** — which is the single
+reason this port took one evening instead of a week.
 
 | Library | Rush 2049 pins | Against worleydl's patches |
 |---|---|---|
-| `rt64` | `5473732` | the UWP patches apply with `--3way` |
+| `rt64` | `5473732` | the UWP patches apply with `--3way`, 2 conflicts |
 | `N64ModernRuntime` | `cdf5abb` | 2 conflicts, both of the "keep both sides" kind |
 | `RecompFrontend` | `b2c5c18` | no conflicts at all |
 | `N64Recomp-browser` | `14241d9` (v0.159.0) | the web layer; each project applies its own |
@@ -47,7 +48,8 @@ conflict resolutions already published applied without a change.
 
 All four resolve by **keeping both sides**, with worleydl's under `#ifdef _UWP` so the tree
 still builds for the desktop. [`tools/resolver_conflictos.py`](../tools/resolver_conflictos.py)
-does it, and it is byte for byte the one published in `marioparty-xbox`.
+does it — and since every line it matches is in the libraries, nothing in it is specific to this
+game.
 
 | File | What is done |
 |---|---|
@@ -62,7 +64,7 @@ for the crash that stopped this port for an evening: the heap asks for `0x1F0000
 4 GB, rebuilt and reinstalled, and **the crash was identical** — 4.16 s instead of 3.92. The
 change was left in because it is harmless, but the cause was elsewhere: the video options.
 
-## ⚠ What this game does differently from Mario Party
+## ⚠ The four things that each cost an attempt
 
 ### 1. The project applies 24 patches of its own, and they go first
 
@@ -75,8 +77,8 @@ ultramodern::set_vi_rate
 common/rt64_gpu_timings.h
 ```
 
-It is this family's equivalent of Mario Party's `sellar.cmake`, but explicit and cleaner — which
-is why **there is no `sellar.cmake` in this repository**.
+This is the project's own mechanism and it is in the project's own repository; nothing in this
+one replaces it. `compilar.ps1` just runs it, as the `runtime` step.
 
 ⚠ **It has to run before worleydl's patches.** The script works out which of its patches are
 already applied by reversing them, newest first, on a scratch copy — and it stops before touching
@@ -87,19 +89,21 @@ implements `G_CULLDL`, which upstream RT64 treats as a no-op, and `rt64-0005` is
 says what happens when a texture is not in the cache — *«undefined to read, whatever a driver
 does with it»*. That sentence is the whole explanation of the Stunt arena fault below.
 
-### 2. A different file layout, so different anchors
+### 2. Where the anchors are, and why the tool takes nothing but the tree
 
-`main()` lives in `src/main.cpp`, not `src/main/main.cpp`; the `WIN32` block's comment at the top
-of `CMakeLists.txt` is worded differently; and the desktop executable's block reaches further
-than Mario Party's — besides the DLL `POST_BUILD` and desktop SDL2, it covers the `.rc` icon and
-`/SUBSYSTEM:WINDOWS`. The tool here takes only `<tree>` for that reason: no argument would make
-Mario Party's anchors fit.
+`main()` lives in `src/main.cpp`, not under `src/main/`. And the desktop executable's block in
+`CMakeLists.txt` reaches further than you would expect: besides the DLL `POST_BUILD` and linking
+against desktop SDL2, it covers the `.rc` icon and `/SUBSYSTEM:WINDOWS` — all of which has to
+stay out of a static-library build. Both facts are about **this** `CMakeLists.txt` and **this**
+`main.cpp`, so [`parche_uwp_build.py`](../tools/parche_uwp_build.py) takes the tree and no other
+argument: there is nothing to parameterise.
 
 ### 3. The ROM's name carries no version
 
 The runtime stores the ROM as `<game_id>.z64`, and this game's `game_id` is plain
-`rush2049.n64.us`, so the file is **`rush2049.n64.us.z64`**. Mario Party's includes a `.1.0`.
-Get it wrong and the launcher sits on "Load ROM" without a word in the log.
+`rush2049.n64.us`, so the file is **`rush2049.n64.us.z64`** — no `1.0`, no suffix, nothing. Other
+projects on this runtime do put a version in it, which is exactly why this is worth saying. Get
+it wrong and the launcher sits on "Load ROM" without a word in the log.
 
 ### 4. The clone leaves submodules half done
 
@@ -191,11 +195,18 @@ Two optional files in `LocalState` make testing without a controller possible:
 | File | What it does |
 |---|---|
 | `autoarranque.txt` | The wrapper adds `--boot`, the project's own development switch: it enters the ROM on the launcher's first frame |
-| `fps.txt` | The FPS counter starts switched on |
+| `fps.txt` | A counter, if you added one, starts switched on |
 
-The counter itself is **not in this repository**. The game does not have one — nor does the
-frontend, nor the wrapper — so this catalogue adds one, in `RecompFrontend`'s `draw_hook`, the
-only point that runs once per *presented* frame. Counting the game's own frames would always say
-30, because RT64 interpolates up to the display's rate. It is bound to **R3**, read straight from
-SDL so the game keeps that button. The patch lives with the Mario Party projects it was written
-for, and applied here unchanged because both pin the same `RecompFrontend` commit.
+The counter is **not in this repository**: it is a diagnostic tool, not a part of the port, and
+it was never measured as one of the pieces here. What follows is every decision in it instead —
+enough to write one in an afternoon, which is worth doing, because without a counter you cannot
+tell whether a change helped.
+
+| Decision | Why |
+|---|---|
+| Hook `RecompFrontend`'s `draw_hook` | The only point that runs once per **presented** frame: RT64 calls it with the swap chain's framebuffer, right before presenting |
+| Do not count the game's own frames | That number would barely move. RT64 interpolates up to the display's rate, and what you need to know is what reaches the screen |
+| Draw with `clearColor` and rectangles | Solid-colour rects into the active framebuffer: no pipeline, no shader, no texture, nothing that has to be ported. Seven-segment digits are plenty, and they look the same on the PC and on the console |
+| Call `setFramebuffer` first | With no menu open there is no framebuffer bound, and `clearColor` acts on the active one. The frontend's own renderer does the same before it draws |
+| Bind it to **R3**, read straight from SDL | An N64 controller has no such button, so neither the game nor the frontend uses it — and reading SDL directly, instead of going through the action mapping, takes it away from nobody |
+| Give it a file switch as well (`fps.txt`) | ⚠ On the console there is no way to press R3 from the Device Portal, and uploading a file takes seconds. Look for it in the **data folder**, not the working directory: the game changes directory to its install folder, which on a console is read-only. The data folder is `LocalState`, which is the one the portal exposes |

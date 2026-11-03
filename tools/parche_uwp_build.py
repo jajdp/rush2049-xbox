@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Los tres cambios que el juego necesita para la compilacion UWP.
 
-Mismo arreglo que en los forks UWP de worleydl y en los ports de Mario Party de la casa:
+Mismo arreglo que en los forks UWP de worleydl:
   - con -DUWP_BUILD=ON el juego produce BIBLIOTECAS ESTATICAS en vez de un .exe, y define
     _UWP, que es lo que enciende los parches de plataforma (no el SDK de la Store);
   - lo que es solo del ejecutable de escritorio (las opciones de enlazado, el icono .rc, el
@@ -9,8 +9,8 @@ Mismo arreglo que en los forks UWP de worleydl y en los ports de Mario Party de 
   - main() pasa a llamarse rush2049_uwp_main() y se exporta, para que uwp\\main.cpp la llame
     despues de que SDL cree la CoreWindow.
 
-⚠ Las anclas son las de ESTE arbol y no valen para otro juego de la familia, que reparte sus
-archivos de otra forma:
+⚠ Las anclas son las de ESTE arbol y no valen para otro juego, que reparte sus archivos de otra
+forma:
 
   - main() vive en src/main.cpp, no en src/main/main.cpp;
   - el comentario del bloque WIN32 del CMakeLists esta redactado distinto;

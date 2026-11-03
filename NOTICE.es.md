@@ -61,13 +61,14 @@ Todo lo que las herramientas **escriben** es propio de este proyecto y no está 
 `tools/graphics-xbox.json` no cita nada: es un archivo de ajustes, y cada valor suyo se midió en
 la consola.
 
-### Dos de las herramientas son, byte a byte, las ya publicadas
+### Por qué dos de las herramientas no citan nada de este juego
 
-`resolver_conflictos.py` y `parche_data_path.py` son **idénticas, byte a byte**, a las de
-[`marioparty-xbox`](https://github.com/jajdp/marioparty-xbox) — verificado con `cmp`, no a ojo—.
-Están aquí porque resolvieron el árbol de este juego sin un solo cambio, que es la medición que
-importaba: los dos proyectos fijan los mismos commits de las bibliotecas y dan los mismos cuatro
-conflictos. Sus anclas se vuelven a medir arriba contra **este** árbol.
+`resolver_conflictos.py` y `parche_data_path.py` casan texto de las **bibliotecas** —`rt64`,
+`N64ModernRuntime` y `RecompFrontend`— y no una sola línea del juego. Por eso todas las líneas
+que se les atribuyen arriba son de esos tres proyectos, y por eso resolvieron este árbol sin un
+solo cambio: de lo que dependen es de los commits de las bibliotecas que lista el README, no de
+Rush 2049. Sus anclas se miden arriba contra **este** árbol, que es el único sobre el que aquí se
+dice haber medido nada.
 
 ## El proyecto del juego está escrito por IA
 

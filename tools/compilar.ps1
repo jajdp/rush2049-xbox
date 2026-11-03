@@ -12,7 +12,7 @@
       2. uwp\ las enlaza con el paquete SDL2/libuwp/dxc de worleydl y genera el appx, que es el
          unico proyecto WindowsStore de verdad.
 
-    ⚠ Y una cosa que este juego hace distinto de Mario Party: antes de nada hay que correr el
+    ⚠ Y lo primero de todo, que es facil pasar por alto: antes de nada hay que correr el
     tools/apply_runtime_patches.sh DEL PROPIO PROYECTO, que aplica sus 24 parches a los
     submodulos. Sin ellos el codigo del juego llama a cosas que las bibliotecas no tienen
     (ultramodern::set_vi_rate, common/rt64_gpu_timings.h). Es el paso «runtime», y va ANTES que
@@ -150,8 +150,8 @@ if (Hacer 'rom') {
 
 # --- 2. los parches del propio proyecto -------------------------------------------------------
 # ⚠ ANTES que los de worleydl: apply_runtime_patches.sh comprueba que puede revertir lo que ya
-# hay, y se detiene si el submodulo tiene otros cambios encima. Esto es lo que en Mario Party
-# hacia sellar.cmake, pero aqui el proyecto lo trae resuelto y explicito.
+# hay, y se detiene si el submodulo tiene otros cambios encima. Es el mecanismo del propio
+# proyecto: sus parches, su script, su repositorio. Aqui solo se ejecuta.
 if (Hacer 'runtime') {
     Paso 'Los 24 parches propios del proyecto (apply_runtime_patches.sh)'
     $bash = Buscar-Bash

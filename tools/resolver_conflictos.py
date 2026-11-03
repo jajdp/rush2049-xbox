@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resuelve los cuatro conflictos del parche UWP de worleydl sobre Mario Party.
+"""Resuelve los cuatro conflictos que da el parche UWP de worleydl sobre este arbol.
 
 Son todos del mismo tipo: el lado «ours» trae el soporte de la pagina web (bloques
 __EMSCRIPTEN__) que worleydl no tenia, y el lado «theirs» trae el cambio de plataforma.

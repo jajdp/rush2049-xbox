@@ -14,29 +14,29 @@ read what each does before letting it touch your tree.
 will take, ready to upload to `LocalState`. The README explains every value in it, and three of
 them are there because the alternative crashes the game.
 
-**There is no `sellar.cmake` here**, unlike the Mario Party repositories. This project applies
-its own 24 runtime patches with its own `tools/apply_runtime_patches.sh`, which `compilar.ps1`
-runs as the `runtime` step. ⚠ That step goes **before** worleydl's patches: the project's script
-checks it can reverse what is already there and stops if the submodule has other changes on top.
+**None of these three is the `runtime` step**, and that step is not optional. The game's project
+applies **24 runtime patches of its own** with its own `tools/apply_runtime_patches.sh`, which
+`compilar.ps1` runs for you. ⚠ It goes **before** worleydl's patches: the project's script checks
+it can reverse what is already there and stops if the submodule has other changes on top.
 
 All three tools are **idempotent**: run them twice and the second time they say "already there"
 and change nothing. All three take the game's tree as an argument and have **no path of their
 own** baked in.
 
-## ⚠ Tool 1 is not interchangeable with Mario Party's
+## ⚠ Tool 1 is this tree's, and takes no other argument
 
-The published `parche_uwp_build.py` of `marioparty-xbox` takes `<tree> <target> <prefix>` and
-works on any game of that family. This one takes only `<tree>`, because its anchors are this
-game's and no argument would make them fit another:
+It matches text in **this game's** `CMakeLists.txt` and `src/main.cpp`, so there is nothing to
+parameterise and no target or prefix to pass:
 
-- `main()` lives in `src/main.cpp`, not `src/main/main.cpp`;
-- the `WIN32` block's comment at the top of `CMakeLists.txt` is worded differently;
-- the desktop executable's block reaches further: besides the DLL `POST_BUILD` and linking
-  against desktop SDL2, it covers the `.rc` icon and `/SUBSYSTEM:WINDOWS`.
+- `main()` lives in `src/main.cpp`, not under `src/main/`;
+- the desktop executable's block reaches further than you would expect: besides the DLL
+  `POST_BUILD` and linking against desktop SDL2, it covers the `.rc` icon and
+  `/SUBSYSTEM:WINDOWS` — all of which has to stay out of a static-library build.
 
-Tools 2 and 3, on the other hand, are **byte for byte** the ones published in `marioparty-xbox`
-(verified with `cmp`): both projects pin the same library commits, so they hit the same four
-conflicts and the same missing symbol.
+Tools 2 and 3 are the other way round: every line they match is in `rt64`, `N64ModernRuntime` or
+`RecompFrontend`, and not one is in the game. Nothing in them is specific to Rush 2049 — what
+they depend on is the library commits the README lists, which is why they resolved this tree
+without a change.
 
 ## ⚠ Tool 3 is the one that is easy to miss
 

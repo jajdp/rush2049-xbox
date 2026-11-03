@@ -47,7 +47,7 @@ ayuda cuando algo falla a mitad:
 | `-Paso` | Qué hace |
 |---|---|
 | `rom` | Ejecuta el `tools/extract.py` del propio proyecto, que escribe en `roms\` las dos copias que necesita |
-| `runtime` | ⚠ **El paso que Mario Party no tiene.** El `tools/apply_runtime_patches.sh` del propio proyecto: sus 24 parches a los submódulos, la capa web primero y luego los suyos |
+| `runtime` | ⚠ **El paso que es fácil pasar por alto, y va primero.** El `tools/apply_runtime_patches.sh` del propio proyecto: sus 24 parches a los submódulos, la capa web primero y luego los suyos |
 | `parches` | Los tres cambios del juego, los parches UWP de worleydl, las cuatro resoluciones de conflictos y la carpeta de datos |
 | `recompilar` | `tools/recompile.sh`: traduce el MIPS de la ROM a C (N64Recomp) y el microcódigo de audio (RSPRecomp). **43 archivos** en `RecompiledFuncs\` |
 | `pc` | El ejecutable de **escritorio**. Constrúyalo primero: sin una compilación de PC no hay con qué comparar un fallo gráfico — que es exactamente como se diagnosticó el del estadio de Stunt |
@@ -72,9 +72,10 @@ carpeta de datos por `LocalFolder`, `AddVectoredExceptionHandler` declarado a ma
 subsistemas levantados uno a uno, y un archivo de registro propio porque el `stderr` del
 contenedor es un fail-fast.
 
-⚠ Si parte del envoltorio de Mario Party, lo que hay que cambiar es el proyecto y el objetivo de
-CMake, el punto de entrada (`rush2049_uwp_main`), la identidad y el nombre visible del paquete, y
-**el nombre del archivo de la ROM** — que es el que muerde, porque aquí no lleva versión.
+⚠ Si parte de uno de los proyectos envoltorio de worleydl, lo que hay que cambiar es el proyecto
+y el objetivo de CMake, el punto de entrada (`rush2049_uwp_main`), la identidad y el nombre
+visible del paquete, y **el nombre del archivo de la ROM** — que es el que muerde, porque aquí no
+lleva versión.
 
 ## 4. Instalarlo en la consola
 
@@ -101,7 +102,7 @@ con el **Explorador de archivos** del portal:
 |---|---|
 | `rush2049.n64.us.z64` | ⚠ La ROM, con **exactamente** ese nombre — sin versión. Con cualquier otro, el launcher se queda en «Load ROM» y no dice por qué |
 | `graphics.json` | El [`tools/graphics-xbox.json`](../tools/graphics-xbox.json), renombrado. Sin él, los valores por defecto matan el juego antes de 21 segundos |
-| `fps.txt` *(opcional)* | El contador de FPS arranca encendido, que en una consola es la única forma de verlo sin un mando delante para pulsar **R3** |
+| `fps.txt` *(opcional)* | Solo sirve si le añadió un contador ([`HOW-IT-WORKS.es.md`](HOW-IT-WORKS.es.md)): arranca encendido, que en una consola es la única forma de verlo sin un mando delante para pulsar **R3** |
 | `autoarranque.txt` *(opcional)* | Entra directo a la ROM, para probar sin nadie delante de la consola |
 
 ## Si algo sale mal

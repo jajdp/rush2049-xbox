@@ -6,15 +6,17 @@ estática sobre **N64Recomp + RT64** — a una **Xbox Series X en modo desarroll
 
 *(English: [README.md](README.md))*
 
-Es la misma receta publicada para los tres ports de Mario Party
-([`marioparty-xbox`](https://github.com/jajdp/marioparty-xbox) y sus hermanos), y eso es
-justamente lo bueno: el juego es del mismo autor y fija **los mismos tres commits de las
-bibliotecas**, así que el trabajo de plataforma vale tal cual. Lo que sí hubo que cambiar para
-este juego está más abajo, y es casi todo lo que añade este repositorio.
+**El trabajo de plataforma no es de este repositorio.** Los forks UWP de RT64, N64ModernRuntime
+y RecompFrontend son de [**worleydl**](https://github.com/worleydl), y este juego fija commits de
+las bibliotecas lo bastante cercanos a los suyos como para que sus parches entren dejando
+**cuatro conflictos y ninguna otra cosa**, los cuatro del mismo tipo. Esa es la razón entera de
+que este port saliera en una tarde. Lo que añade este repositorio es lo que hubo que cambiar
+**para este juego**: sus tres cambios de código, el orden en que van los parches, los ajustes de
+vídeo que la consola aguanta y el registro de lo que salió mal.
 
-⚠ **Ojo con el nombre.** Este es *San Francisco Rush 2049* (2000). El otro port de Rush de este
-catálogo, [`rush2-xbox`](https://github.com/jajdp/rush2-xbox), es *Rush 2: Extreme Racing USA*
-(1998) — un juego distinto y de otro autor.
+⚠ **Ojo con el nombre.** Este es *San Francisco Rush 2049* (2000), **no** *Rush 2: Extreme Racing
+USA* (1998). Otro juego, otro proyecto de recompilación y otro autor — si viene buscando *Rush
+2*, esta no es la receta.
 
 ## En qué consola se probó
 
@@ -33,7 +35,7 @@ Construido desde la **v0.1.46** del juego. Medido en una Xbox Series X el 2026-1
 |---|---|
 | ✅ Arranca, dibuja y responde al mando | Paquete «Rush 2049 Recomp» 0.1.0.3, instalado por el Device Portal |
 | ✅ **Jugado de verdad**, con mando en la mano | El estadio de Stunt, con saltos incluidos: no solo la demo de atracción |
-| ✅ **56–60 FPS** | El contador del propio juego, que este port añade en **R3** |
+| ✅ **56–60 FPS** | Medidos con un contador pintado sobre el fotograma, en **R3**. El juego no trae ninguno; este es una herramienta de diagnóstico y está descrito en [`docs/HOW-IT-WORKS.es.md`](docs/HOW-IT-WORKS.es.md), no incluido aquí |
 | ✅ El launcher sale | Start Game / Controls / Settings / Mods / Exit |
 | ✅ La ROM se valida sola | Desde `LocalState`, sin ningún diálogo |
 | ✅ **Los mods cargan**, el menú de trucos incluido | [Hotwire 2049](https://github.com/Deozaan/Rush2049RecompCheatsMod) pone CHEATS en el menú principal |
@@ -80,9 +82,9 @@ memoria de GPU son acumulativos y no se ven de a una.
 
 | Pieza | Qué es |
 |---|---|
-| [`tools/compilar.ps1`](tools/compilar.ps1) | **La receta entera**, en seis pasos que se pueden repetir de uno en uno: ROM, parches del proyecto, recompilar, parches, bibliotecas estáticas, appx |
-| [`tools/parche_uwp_build.py`](tools/parche_uwp_build.py) | Los tres cambios que necesita **el juego mismo**: la opción `UWP_BUILD`, renombrar `main()` y `SDL_INIT_HAPTIC`. Por anclas exactas, idempotente. ⚠ **Las anclas de este juego**, que no son las de Mario Party |
-| [`tools/resolver_conflictos.py`](tools/resolver_conflictos.py) | Los cuatro conflictos que dan los parches UWP de worleydl. Byte a byte el publicado en `marioparty-xbox`: resolvió este árbol sin tocarlo |
+| [`tools/compilar.ps1`](tools/compilar.ps1) | **La receta entera**, en siete pasos que se pueden repetir de uno en uno: ROM, parches del proyecto, parches UWP, recompilar, la compilación de escritorio, bibliotecas estáticas, appx |
+| [`tools/parche_uwp_build.py`](tools/parche_uwp_build.py) | Los tres cambios que necesita **el juego mismo**: la opción `UWP_BUILD`, renombrar `main()` y `SDL_INIT_HAPTIC`. Por anclas exactas, idempotente. ⚠ **Las anclas son las de este juego**, y por eso no toma más argumento que el árbol |
+| [`tools/resolver_conflictos.py`](tools/resolver_conflictos.py) | Los cuatro conflictos que dan los parches UWP de worleydl. Lo que casa está en las bibliotecas, no en el juego, así que resolvió este árbol sin tocarlo |
 | [`tools/parche_data_path.py`](tools/parche_data_path.py) | Define `recompui_uwp_data_path`. **Sin él el appx no enlaza** |
 | [`tools/graphics-xbox.json`](tools/graphics-xbox.json) | Los ajustes de arriba, listos para subir a `LocalState` |
 | [`docs/HOW-IT-WORKS.es.md`](docs/HOW-IT-WORKS.es.md) | Las dos compilaciones, lo que este juego hace distinto, y las trampas |
@@ -104,36 +106,38 @@ proyecto `WindowsStore` de verdad es el del appx.
 `uwp-dk64`), `N64ModernRuntime-dev` (`uwp-rebase`), `RecompFrontend-dev` (`uwp-compat`) y el
 paquete [`worleydl/uwp-dep`](https://github.com/worleydl/uwp-dep), **rama `rt64`**.
 
-**Y la buena noticia, que es por lo que este port salió en una tarde:** Rush 2049 fija
-exactamente los mismos commits de las bibliotecas que Mario Party, así que los parches de
-worleydl y las cuatro resoluciones de conflictos ya escritas valen sin tocar nada.
+**Los commits que fija este juego** son lo que decide cuánto del trabajo de worleydl sale gratis,
+así que son lo primero que hay que mirar en cualquier árbol que se vaya a parchear. Si coinciden,
+todo lo de abajo vale tal como está escrito; si no, los conflictos estarán en otro sitio.
 
-| Biblioteca | Rush 2049 | Mario Party |
+| Biblioteca | Commit que fija | Frente a los parches UWP de worleydl |
 |---|---|---|
-| `rt64` | `5473732` | `5473732` ✓ |
-| `N64ModernRuntime` | `cdf5abb` | `cdf5abb` ✓ |
-| `RecompFrontend` | `b2c5c18` | `b2c5c18` ✓ |
-| `N64Recomp-browser` | `14241d9` (v0.159.0) | `889b627` (v0.156.0) — distinto, pero cada proyecto aplica el suyo |
+| `rt64` | `5473732` | entran con `--3way`, **2 conflictos** |
+| `N64ModernRuntime` | `cdf5abb` | **2 conflictos**, los dos de «quedarse con los dos lados» |
+| `RecompFrontend` | `b2c5c18` | ninguno |
+| `N64Recomp-browser` | `14241d9` (v0.159.0) | la capa web; este proyecto la parchea él mismo, en el paso `runtime` |
 
-## ⚠ Lo que este juego hace distinto de Mario Party
+## ⚠ Las cuatro cosas que costaron un intento fallido cada una
 
-Cuatro cosas, y cada una costó un intento fallido:
+Ninguna está en los parches de worleydl ni en el README del juego: son lo que hubo que averiguar
+aquí:
 
-| | Qué cambia |
+| | En qué consiste |
 |---|---|
-| 1 | **Hay que correr `tools/apply_runtime_patches.sh` antes de compilar.** El proyecto aplica **24 parches propios** a sus submódulos —la capa web primero y luego los suyos— y sin ellos el código del juego llama a cosas que las bibliotecas no tienen (`ultramodern::set_vi_rate`, `common/rt64_gpu_timings.h`). Es el equivalente del `sellar.cmake` de Mario Party en esta familia, pero explícito y más limpio — por eso **aquí no hay `sellar.cmake`** |
-| 2 | **Otro reparto de archivos.** `main()` está en `src/main.cpp`, no en `src/main/main.cpp`, y el comentario del bloque `WIN32` está redactado distinto, así que `parche_uwp_build.py` necesita **anclas propias**. El bloque del ejecutable de escritorio llega además más lejos: incluye el icono `.rc` y `/SUBSYSTEM:WINDOWS` |
-| 3 | ⚠ **El nombre de la ROM en `LocalState` no lleva versión.** El runtime la guarda como `<game_id>.z64`, y aquí el `game_id` es `rush2049.n64.us` a secas: el archivo es **`rush2049.n64.us.z64`**. El de Mario Party incluye un `.1.0`. Con el nombre equivocado el launcher se queda en «Load ROM» sin decir por qué |
+| 1 | **Hay que correr `tools/apply_runtime_patches.sh` antes de compilar, y antes que los parches de worleydl.** El proyecto aplica **24 parches propios** a sus submódulos —la capa web primero y luego los suyos— y sin ellos el código del juego llama a cosas que las bibliotecas no tienen (`ultramodern::set_vi_rate`, `common/rt64_gpu_timings.h`). Su script averigua lo ya aplicado revirtiéndolo, así que se niega a correr sobre un submódulo que tenga otros cambios encima |
+| 2 | **Dónde están las anclas.** `main()` está en `src/main.cpp`, no bajo `src/main/`, y el bloque del ejecutable de escritorio del `CMakeLists.txt` llega más lejos de lo que uno espera: además de copiar las DLL y enlazar con el SDL2 de escritorio, incluye el icono `.rc` y `/SUBSYSTEM:WINDOWS`. Todo eso tiene que quedar fuera de la compilación como bibliotecas, y por eso `parche_uwp_build.py` es de este árbol |
+| 3 | ⚠ **El nombre de la ROM en `LocalState` no lleva versión.** El runtime la guarda como `<game_id>.z64`, y aquí el `game_id` es `rush2049.n64.us` a secas: el archivo es **`rush2049.n64.us.z64`** — sin `1.0`, sin sufijo, sin nada. Con cualquier otro nombre el launcher se queda en «Load ROM» sin decir por qué |
 | 4 | **`git clone --recurse-submodules` se dejó seis submódulos a medias** (`json`, `plainargs`, `spirv-cross`, `stb`, `xxHash`, `zstd`), sin avisar, y el configure murió después con *«does not contain a CMakeLists.txt file»*. Hay que repetir `git submodule update --init --recursive` hasta que ninguna carpeta de `lib/rt64/src/contrib` quede vacía |
 
 ## Lo que no es
 
 No hay **ROM**, ni código recompilado, ni ejecutable, ni appx, ni arte del juego. Tampoco los
 parches de worleydl —están en sus repositorios—, ni el paquete UWP, ni el proyecto envoltorio
-`uwp/`, que deriva del suyo. Ni el parche del contador de FPS, que es un añadido de este
-catálogo y vive con los proyectos de Mario Party para los que se escribió. Lo que hay aquí es la
-receta, las cuatro herramientas, los ajustes de vídeo que funcionan y el registro de lo que salió
-mal.
+`uwp/`, que deriva del suyo. Ni el contador de FPS: es una herramienta de diagnóstico y no una
+parte del port, así que [`docs/HOW-IT-WORKS.es.md`](docs/HOW-IT-WORKS.es.md) explica cómo
+funciona y dónde engancha —con detalle suficiente para escribirlo— en vez de distribuirlo. Lo que
+hay aquí es la receta, las cuatro herramientas, los ajustes de vídeo que funcionan y el registro
+de lo que salió mal.
 
 ## Créditos y licencia
 

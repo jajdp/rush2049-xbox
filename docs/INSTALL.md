@@ -46,7 +46,7 @@ something fails halfway:
 | `-Paso` | What it does |
 |---|---|
 | `rom` | Runs the project's own `tools/extract.py`, which writes the two copies it needs into `roms\` |
-| `runtime` | ⚠ **The step Mario Party does not have.** The project's own `tools/apply_runtime_patches.sh`: its 24 patches to the submodules, the web layer first and then its own |
+| `runtime` | ⚠ **The step that is easy to miss, and it goes first.** The project's own `tools/apply_runtime_patches.sh`: its 24 patches to the submodules, the web layer first and then its own |
 | `parches` | The game's own three changes, worleydl's UWP patches, the four conflict resolutions, and the data path |
 | `recompilar` | `tools/recompile.sh`: translates the ROM's MIPS to C (N64Recomp) and the audio microcode (RSPRecomp). **43 files** in `RecompiledFuncs\` |
 | `pc` | The **desktop** executable. Build it first: without a PC build there is nowhere to compare a graphics fault against — which is exactly how the Stunt arena fault was diagnosed |
@@ -69,9 +69,9 @@ repositories. What it has to contain, and why each piece is there, is written ou
 through `LocalFolder`, `AddVectoredExceptionHandler` declared by hand, the subsystems brought up
 one at a time, and a log file of its own because the container's `stderr` is a fail-fast.
 
-⚠ If you start from the Mario Party wrapper, the names to change are the CMake project and
-target, the entry point (`rush2049_uwp_main`), the package identity and display name, and **the
-ROM's file name** — which is the one that bites, because it has no version in it here.
+⚠ If you start from one of worleydl's wrapper projects, what has to change is the CMake project
+and target, the entry point (`rush2049_uwp_main`), the package identity and display name, and
+**the ROM's file name** — which is the one that bites, because it has no version in it here.
 
 ## 4. Installing it on the console
 
@@ -97,7 +97,7 @@ the portal's **File explorer**:
 |---|---|
 | `rush2049.n64.us.z64` | ⚠ The ROM, under **exactly** that name — no version in it. With any other name the launcher sits on "Load ROM" and says nothing |
 | `graphics.json` | [`tools/graphics-xbox.json`](../tools/graphics-xbox.json), renamed. Without it the defaults crash the game within 21 seconds |
-| `fps.txt` *(optional)* | The FPS counter starts on, which on a console is the only way to see it without a controller in hand to press **R3** |
+| `fps.txt` *(optional)* | Only useful if you added a counter ([`HOW-IT-WORKS.md`](HOW-IT-WORKS.md)): it starts on, which on a console is the only way to see it without a controller in hand to press **R3** |
 | `autoarranque.txt` *(optional)* | Boots straight into the ROM, for testing with nobody in front of the console |
 
 ## If something goes wrong

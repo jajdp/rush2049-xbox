@@ -32,13 +32,14 @@ exactas, y es idempotente.
 
 ## Las bibliotecas: este juego viaja gratis
 
-Rush 2049 fija **exactamente los mismos tres commits de bibliotecas que Mario Party**, que es la
-única razón por la que este port salió en una tarde en vez de en una semana: los parches UWP de
-worleydl y las cuatro resoluciones de conflictos ya publicadas aplicaron sin un solo cambio.
+El trabajo de plataforma es de **worleydl**, y lo que decide cuánto de él sirve es qué commits de
+las bibliotecas fija el juego. Rush 2049 fija unos lo bastante cercanos a sus forks como para que
+sus parches entren con `git apply --3way` y dejen **cuatro conflictos, todos del mismo tipo** —
+que es la única razón por la que este port salió en una tarde en vez de en una semana.
 
 | Biblioteca | Rush 2049 fija | Frente a los parches de worleydl |
 |---|---|---|
-| `rt64` | `5473732` | los parches UWP aplican con `--3way` |
+| `rt64` | `5473732` | los parches UWP aplican con `--3way`, 2 conflictos |
 | `N64ModernRuntime` | `cdf5abb` | 2 conflictos, los dos del tipo «quedarse con los dos lados» |
 | `RecompFrontend` | `b2c5c18` | ningún conflicto |
 | `N64Recomp-browser` | `14241d9` (v0.159.0) | la capa web; cada proyecto aplica la suya |
@@ -47,8 +48,8 @@ worleydl y las cuatro resoluciones de conflictos ya publicadas aplicaron sin un 
 
 Los cuatro se resuelven **quedándose con los dos lados**, con el de worleydl bajo `#ifdef _UWP`
 para que el árbol siga compilando para escritorio. Lo hace
-[`tools/resolver_conflictos.py`](../tools/resolver_conflictos.py), que es byte a byte el
-publicado en `marioparty-xbox`.
+[`tools/resolver_conflictos.py`](../tools/resolver_conflictos.py) — y como cada línea que casa
+está en las bibliotecas, no hay nada suyo que sea de este juego.
 
 | Archivo | Qué se hace |
 |---|---|
@@ -63,7 +64,7 @@ justo esos 512 MB sin una página de guarda detrás. Se subieron a 4 GB, se reco
 reinstaló, y **el fallo fue idéntico** — 4,16 s en vez de 3,92. El cambio se dejó puesto porque
 es inocuo, pero la causa estaba en otro sitio: las opciones de vídeo.
 
-## ⚠ Lo que este juego hace distinto de Mario Party
+## ⚠ Las cuatro cosas que costaron un intento cada una
 
 ### 1. El proyecto aplica 24 parches propios, y van primero
 
@@ -76,8 +77,8 @@ ultramodern::set_vi_rate
 common/rt64_gpu_timings.h
 ```
 
-Es el equivalente en esta familia del `sellar.cmake` de Mario Party, pero explícito y más limpio
-— por eso **aquí no hay `sellar.cmake`**.
+Es el mecanismo del propio proyecto y vive en el repositorio del propio proyecto; nada de este
+repositorio lo sustituye. `compilar.ps1` solo lo ejecuta, como paso `runtime`.
 
 ⚠ **Tiene que correr antes que los parches de worleydl.** El script averigua cuáles de sus
 parches están ya aplicados revirtiéndolos, del más nuevo al más viejo, sobre una copia aparte —y
@@ -89,20 +90,23 @@ implementa `G_CULLDL`, que el RT64 de origen trata como una no-operación, y `rt
 dice qué pasa cuando una textura no está en la caché — *«undefined to read, whatever a driver
 does with it»*. Esa frase es la explicación entera del fallo del estadio de Stunt de más abajo.
 
-### 2. Otro reparto de archivos, así que otras anclas
+### 2. Dónde están las anclas, y por qué la herramienta no toma más que el árbol
 
-`main()` está en `src/main.cpp`, no en `src/main/main.cpp`; el comentario del bloque `WIN32` del
-principio del `CMakeLists.txt` está redactado distinto; y el bloque del ejecutable de escritorio
-llega más lejos que el de Mario Party — además del `POST_BUILD` de las DLL y del SDL2 de
-escritorio, incluye el icono `.rc` y `/SUBSYSTEM:WINDOWS`. La herramienta de aquí toma solo
-`<arbol>` por eso: ningún argumento haría encajar las anclas de Mario Party.
+`main()` está en `src/main.cpp`, no bajo `src/main/`. Y el bloque del ejecutable de escritorio del
+`CMakeLists.txt` llega más lejos de lo que uno espera: además del `POST_BUILD` de las DLL y del
+enlace con el SDL2 de escritorio, incluye el icono `.rc` y `/SUBSYSTEM:WINDOWS` — y todo eso tiene
+que quedar fuera de una compilación como bibliotecas estáticas. Las dos cosas son de **este**
+`CMakeLists.txt` y de **este** `main.cpp`, así que
+[`parche_uwp_build.py`](../tools/parche_uwp_build.py) toma el árbol y ningún otro argumento: no
+hay nada que parametrizar.
 
 ### 3. El nombre de la ROM no lleva versión
 
 El runtime guarda la ROM como `<game_id>.z64`, y el `game_id` de este juego es
-`rush2049.n64.us` a secas, así que el archivo es **`rush2049.n64.us.z64`**. El de Mario Party
-incluye un `.1.0`. Si se equivoca, el launcher se queda en «Load ROM» sin una palabra en el
-registro.
+`rush2049.n64.us` a secas, así que el archivo es **`rush2049.n64.us.z64`** — sin `1.0`, sin
+sufijo, sin nada. Otros proyectos sobre este mismo runtime sí le ponen versión, que es justo por
+lo que vale la pena decirlo. Si se equivoca, el launcher se queda en «Load ROM» sin una palabra
+en el registro.
 
 ### 4. El clon deja submódulos a medias
 
@@ -196,12 +200,18 @@ Dos archivos opcionales en `LocalState` hacen posible probar sin mando:
 | Archivo | Qué hace |
 |---|---|
 | `autoarranque.txt` | El envoltorio añade `--boot`, el interruptor de desarrollo del propio proyecto: entra a la ROM en el primer fotograma del launcher |
-| `fps.txt` | El contador de FPS arranca encendido |
+| `fps.txt` | Un contador, si le añadió uno, arranca encendido |
 
-El contador **no está en este repositorio**. El juego no trae uno —ni el frontend, ni el
-envoltorio—, así que este catálogo le añade el suyo, en el `draw_hook` de `RecompFrontend`, que
-es el único punto que corre una vez por fotograma *presentado*. Contar los fotogramas del juego
-diría siempre 30, porque RT64 interpola hasta la tasa de la pantalla. Va en **R3**, leído directo
-de SDL para no quitarle ese botón al juego. El parche vive con los proyectos de Mario Party para
-los que se escribió, y aquí aplicó sin cambios porque los dos fijan el mismo commit de
-`RecompFrontend`.
+El contador **no está en este repositorio**: es una herramienta de diagnóstico, no una parte del
+port, y nunca se midió como una de las piezas de aquí. En su lugar van todas las decisiones que
+lleva dentro — suficiente para escribirlo en una tarde, que vale la pena, porque sin un contador
+no hay forma de saber si un cambio sirvió de algo.
+
+| Decisión | Por qué |
+|---|---|
+| Engancharlo en el `draw_hook` de `RecompFrontend` | Es el único punto que corre una vez por fotograma **presentado**: RT64 lo llama con el framebuffer del swap chain, justo antes de presentar |
+| No contar los fotogramas del juego | Ese número casi no se movería. RT64 interpola hasta la tasa de la pantalla, y lo que hay que saber es qué llega a la pantalla |
+| Pintar con `clearColor` y rectángulos | Rectángulos de color sólido sobre el framebuffer activo: sin pipeline, sin shaders, sin texturas, sin nada que haya que portar. Con dígitos de siete segmentos sobra, y se ven igual en el PC y en la consola |
+| Llamar antes a `setFramebuffer` | Sin ningún menú abierto no hay framebuffer puesto, y `clearColor` actúa sobre el activo. El propio renderizador de la interfaz hace lo mismo antes de dibujar |
+| Ponerlo en **R3**, leído directo de SDL | El mando de N64 no tiene ese botón, así que no lo usa ni el juego ni el frontend — y leer SDL directamente, en vez de pasar por el mapeo de acciones, no se lo quita a nadie |
+| Darle además un interruptor por archivo (`fps.txt`) | ⚠ En la consola no hay forma de pulsar R3 desde el Device Portal, y subir un archivo cuesta segundos. Hay que buscarlo en la **carpeta de datos**, no en el directorio de trabajo: el juego se cambia a su carpeta de instalación, que en una consola es de solo lectura. La de datos es `LocalState`, que es la que expone el portal |
