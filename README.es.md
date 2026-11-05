@@ -29,21 +29,22 @@ arranque; aquí no se ha medido nada sobre ella.
 
 ## Hasta dónde llega este port
 
-Construido desde la **v0.1.46** del juego. Medido en una Xbox Series X el 2026-11-02:
+Construido desde la **v0.1.46** del juego. Medido en una Xbox Series X el 2026-11-02, con la
+vuelta completa a Circuit confirmada el 2026-11-05:
 
 | | |
 |---|---|
 | ✅ Arranca, dibuja y responde al mando | Paquete «Rush 2049 Recomp» 0.1.0.3, instalado por el Device Portal |
-| ✅ **Jugado de verdad**, con mando en la mano | El estadio de Stunt, con saltos incluidos: no solo la demo de atracción |
+| ✅ **Jugado de punta a punta**, con mando en la mano | Las seis pistas de Circuit terminadas, y el estadio de Stunt con sus saltos: no solo la demo de atracción |
 | ✅ **56–60 FPS** | Medidos con un contador pintado sobre el fotograma, en **R3**. El juego no trae ninguno; este es una herramienta de diagnóstico y está descrito en [`docs/HOW-IT-WORKS.es.md`](docs/HOW-IT-WORKS.es.md), no incluido aquí |
 | ✅ El launcher sale | Start Game / Controls / Settings / Mods / Exit |
 | ✅ La ROM se valida sola | Desde `LocalState`, sin ningún diálogo |
 | ✅ **Los mods cargan**, el menú de trucos incluido | [Hotwire 2049](https://github.com/Deozaan/Rush2049RecompCheatsMod) pone CHEATS en el menú principal |
 | ⚠ Tres opciones de vídeo tienen que quedarse apagadas | Matan el juego o estropean el escenario — la tabla de abajo |
 
-**Lo que NO se afirma aquí:** que todas las pistas y todos los modos funcionen de punta a punta.
-Lo medido es el arranque, el estadio de Stunt jugado con mando, los mods cargando y la tasa de
-fotogramas.
+**Lo que NO se afirma aquí:** que todos los modos funcionen. Las seis pistas de Circuit se han
+recorrido de punta a punta en la consola; **Ghost Race, Battle y los modos de pantalla partida
+no se han medido allí en absoluto.**
 
 ## ⚠ Las opciones de vídeo que esta consola aguanta
 

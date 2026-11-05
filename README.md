@@ -29,21 +29,22 @@ nothing here has been measured on it.
 
 ## Where this port stands
 
-Built from the game's **v0.1.46**. Measured on an Xbox Series X on 2026-11-02:
+Built from the game's **v0.1.46**. Measured on an Xbox Series X on 2026-11-02, with the
+full Circuit run confirmed on 2026-11-05:
 
 | | |
 |---|---|
 | ✅ Boots, draws and takes controller input | Package «Rush 2049 Recomp» 0.1.0.3, installed through the Device Portal |
-| ✅ **Played for real**, with a controller | Stunt arena, jumps and all — not just the attract demo |
+| ✅ **Played through**, with a controller | The six Circuit tracks run end to end, plus the Stunt arena with its jumps — not just the attract demo |
 | ✅ **56–60 FPS** | Measured with a counter drawn over the frame on **R3**. The game has none; this one is a diagnostic tool, described in [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) rather than shipped here |
 | ✅ The launcher comes up | Start Game / Controls / Settings / Mods / Exit |
 | ✅ The ROM validates by itself | From `LocalState`, with no dialog |
 | ✅ **Mods load**, including the cheats menu | [Hotwire 2049](https://github.com/Deozaan/Rush2049RecompCheatsMod) puts CHEATS in the main menu |
 | ⚠ Three video options have to stay off | They crash the game or break the scenery — the table below |
 
-**What is NOT claimed here:** that every track and mode runs cleanly end to end. What was
-measured is the launch, the Stunt arena played with a controller, mods loading, and the frame
-rate.
+**What is NOT claimed here:** that every mode runs cleanly. The six Circuit tracks have been
+run end to end on the console; **Ghost Race, Battle and the split-screen modes have not been
+measured there at all.**
 
 ## ⚠ The video settings this console will take
 

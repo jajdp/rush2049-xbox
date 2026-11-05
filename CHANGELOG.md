@@ -5,6 +5,21 @@ All notable changes to this repository. Dates are `YYYY-MM-DD`.
 This file is not translated: it is a historical record that grows with each version, and
 translating it would mean two histories that drift apart.
 
+## [1.0.2] — 2026-11-05
+
+Documentation only, and it narrows a claim instead of widening one: the console has now been
+played further than this repository said it had.
+
+### Changed
+
+- **Circuit has been run end to end on the console.** The status table said the Stunt arena and
+  nothing else, which was true on 2026-11-02 and is not any more: the six Circuit tracks have
+  been played through on an Xbox Series X. The paragraph listing what is *not* claimed now names
+  what is still unmeasured there — **Ghost Race, Battle and the split-screen modes** — rather
+  than lumping every track and mode in with them. Issue #1 closes on that basis; #2 (scenery
+  culling on `Reduced`) and #3 (suspension in Developer Mode) stay open, and both are still
+  untried on the console.
+
 ## [1.0.1] — 2026-11-03
 
 Documentation only. Nothing in the recipe or the tools changed behaviour, and that was checked
